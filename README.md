@@ -39,6 +39,31 @@
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 */
+4. Set up global error handler underneath required routes
+  example: 
+/*
+ * express error handler
+ * @see https://expressjs.com/en/guide/error-handling.html#writing-error-handlers
+
+app.use((err, req, res, next) => {
+  const defaultErr = {
+    log: 'Express error handler caught unknown middleware error',
+    status: 500,
+    message: { err: 'An error occurred' },
+  };
+  const errorObj = Object.assign({}, defaultErr, err);
+  console.log(errorObj.log);
+  return res.status(errorObj.status).json(errorObj.message);
+});
+*/
+5. Declare a PORT variable and assign to port value (3000 or 3500)
+6. To start server, call:
+app.listen(PORT, () => {
+  console.log(`Server listening on port: ${PORT}...`);
+});
+7. Also import the proper routes modules and set up the route handler in server file.
+'' const apiRoute = require('./routes/api'); "
+8. Lastly, export the app as module.exports.
 
 //Set up our database
 1. create a model.js file that includes:
@@ -59,6 +84,37 @@
       }))
     g-- catch any errors (db.catch(err))
   3. Create a schema for the db. Find out if we need to initialize our table (CREATE TABLE) schema within the elephant SQL browser, or if there's a way to initialize the table within VS code.
+
+
+// Setting up Routes file
+1. Create a routes folder then an api.js file
+2. First thing in file is to declare express and import the module
+3. Declare a router and assign to value of express.Router()
+4. import middleware controllers (Will create middleware file next)
+  a-- Make sure require path is going to correct file
+5. Outline basic CRUD requests (get, post, put, delete). Each route ends with a (req, res) call back function.
+  a-- Can create console logs in each route to ensure that BE is hitting each step correctly
+  b-- Depending on what is saved to res.locals, we can update the response of data from the BE to the FE
+6. Export the api routes file as a module, so that the server file has access to the routes
+
+
+// Set up middleware Controllers file
+1. Declare a variable and assign to database model
+2. Declare variable and assign to empty object so we can create methods for middleware
+3. When creating middleware controller, keep in since each method accepts three parameters (req, res, next). Best use case has been creating them as async functions and implementing the try, catch blocks.
+  a-- Besure to return next() within both try and catch blocks
+  b-- can use res.locals object to return specific information to the FE
+4. Be sure to export the controller object name.
+
+
+
+// NOTE FOR TESTING WITH POSTMAN:
+- enter correct address pathway
+- for inputs ensure body option is selected
+- select raw option, also change dropdown option from TEXT to JSON
+- In the body box, make sure to create your test inputs in JSON format (everything goes in an object)
+- preface each column with their proper key name that you'll be using in the destructuring of the req.body
+
 
   Tasks for tomorrow:
   - Create basicl CRUD routes and middle ware

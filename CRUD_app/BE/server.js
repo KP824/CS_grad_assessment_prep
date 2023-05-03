@@ -1,20 +1,25 @@
 // set up our express routes here
 const path = require('path');
 const express = require('express');
-
+const PORT = 3500;
 const app = express();
+// import api router routes
+const apiRouter = require('./routes/api');
+
+
 /**
  * handle parsing request body
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 /**
  * handle requests for static files
  */
 app.use(express.static(path.resolve(__dirname, '../FE')));
 
+// defined route handlers
+app.use('/tasks', apiRouter);
 
 /**
  * express error handler
