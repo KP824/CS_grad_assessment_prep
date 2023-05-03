@@ -40,5 +40,30 @@
   app.use(express.urlencoded({ extended: true }));
 */
 
-4. START OF DAY 2. Connect to the DATABASE, continue with how to set up schema, and routes for basic crud functionality
-5. Start on FE
+//Set up our database
+1. create a model.js file that includes:
+// importing a module in Node.js. We're loading a module, which is a third part library for connecting to PostgreSQL databases in node.js, called 'pg(postgres)'
+  --detructure Pool and require in a postgres module (const { Pool } = require('pg'))
+  --declare a constant PG_URI and set its value to the database key
+  --create a new instance of Pool and set the key connectionString to the value of PG_URI
+  --export the module ()
+  2. create a route controller file 
+    a-- require in the route to the database model.js file
+    b-- declare a constant variable and set its value to an object literal
+    c-- create a route controller that passes in req, res, next
+    d-- declare a variable that will create a query to the database (const search = 'SELECT * FROM tasks_table';)
+    e-- query the database, passing in the previously declared variable (db.query(search))
+    f-- then pass in data and assign it to a property on res.locals (.then((data) => {
+      res.locals.tasks = data;
+      return next();
+      }))
+    g-- catch any errors (db.catch(err))
+  3. Create a schema for the db. Find out if we need to initialize our table (CREATE TABLE) schema within the elephant SQL browser, or if there's a way to initialize the table within VS code.
+
+  Tasks for tomorrow:
+  - Create basicl CRUD routes and middle ware
+  - Test those routes in POSTMAN to see if we can CRUD the tasks within our database
+  - Create input forms in our front end using dom manipulation
+  - Test FE inputs and submit form to see if it works with Database
+ 
+
