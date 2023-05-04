@@ -6,12 +6,14 @@ const routeController = {};
 // Create middle ware for each CRUD function
 routeController.getAllTasks = async (req, res, next) => {
   try {
+    // sql command to grab everything from the table 'tasks'
     const search = 'SELECT * FROM TASKS';
-
+    // queries the db, passing in the query string 'search'
     const getTasks = await db.query(search);
 
-    // The evaluated result of the query at the rows property, will be an array of objects. Each object will the each input into the data base, in this case the id value and the task directions.
-    console.log(`JSON.rows[0]: ${JSON.stringify(getTasks.rows)}`);
+    // The evaluated result of the query at the rows property, will be an array of objects. Each object will be individual inputs into the data base, in this case the id value and the task directions. Each task is represented as a row on the "Tasks" table.
+    console.log(`JSON.rows: ${JSON.stringify(getTasks.rows)}`);
+    
     res.locals.tasks = getTasks.rows;
     return next();
   }
@@ -55,21 +57,22 @@ routeController.createNewTask = async (req, res, next) => {
 
 routeController.updateTask = async (req, res, next) => {
   try {
-    const { id, updateTask } = req.body;
-    console.log(`this is req.body: ${JSON.stringify(req.body)}`);
-    // const updateQuery = `
-    //   UPDATE TASKS
-    //     WHERE id = ${id}
-    //     SET directions = $1
-    //     RETURNING *;
-    // `;
+    const { directions } = req.body;
+    const { id } = req.params;
 
-    const response = await db.query(`
+    const params = [ directions, id];
+
+    console.log(`this is req.body: ${JSON.stringify(req.body)}`);
+
+    const updateQuery = `
     UPDATE TASKS
-      WHERE id = ${id}
-      SET directions = ${updateTask}
-      RETURNING *;
-  `);
+    SET directions = $1
+    WHERE id = $2
+    RETURNING *;
+    `;
+   
+    const response = await db.query(updateQuery, params);
+
     res.locals.updatedTask = response.rows[0];
     return next();
 
@@ -85,7 +88,7 @@ routeController.updateTask = async (req, res, next) => {
 
 routeController.deleteTask = async (req, res, next) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
     const deleteQuery = `
       DELETE FROM tasks
       WHERE id = $1  

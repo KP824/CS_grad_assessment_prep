@@ -19,12 +19,12 @@ router.post('/', routeController.createNewTask, (req, res) => {
 });
 
 router.put('/:id', routeController.updateTask, (req, res) => {
-  console.log(`end of UPDATE request BE route`);
+  // console.log(`end of UPDATE request BE route`);
   res.status(200).json(res.locals.updatedTask);
 });
 
 router.delete('/:id', routeController.deleteTask, (req, res) => {
-  console.log(`end of DELETE request BE route`);
+  // console.log(`end of DELETE request BE route`);
   res.status(200).json({ message: 'successful delete request' })
 });
 

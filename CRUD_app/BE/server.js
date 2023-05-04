@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
  */
 app.use(express.static(path.resolve(__dirname, '../FE')));
 
-// defined route handlers
+// defined route handlers (check line 7)
 app.use('/tasks', apiRouter);
 
 /**

@@ -9,7 +9,13 @@ startHeader.innerHTML = "Hello world, start of our page";
 // document.body.appendChild(variable name here)
 document.body.appendChild(startHeader);
 
+const newLine = document.createElement('h3');
+newLine.innerHTML = "I HATE STUDYING";
+document.body.appendChild(newLine);
 
+const newLine2 = document.createElement('h3');
+newLine2.innerHTML = "I HATE STUDYING, BUT I OVE SUCCESS";
+document.body.appendChild(newLine2);
 
 
  /*

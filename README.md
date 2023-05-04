@@ -62,6 +62,7 @@ app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}...`);
 });
 7. Also import the proper routes modules and set up the route handler in server file.
+ -- Line 22 in server.js
 '' const apiRoute = require('./routes/api'); "
 8. Lastly, export the app as module.exports.
 
