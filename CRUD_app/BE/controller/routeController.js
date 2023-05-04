@@ -112,3 +112,25 @@ routeController.deleteTask = async (req, res, next) => {
 
 
 module.exports = routeController;
+
+/*
+
+On the server, create a route handler that handles the POST request and inserts the new task into the SQL database. For example:
+
+javascript
+
+    router.post('/tasks', async (req, res, next) => {
+      try {
+        const { directions } = req.body;
+        const result = await db.query(
+          'INSERT INTO tasks (directions) VALUES ($1) RETURNING *',
+          [directions]
+        );
+        res.json(result.rows[0]);
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    In this example, we extract the directions field from the req.body object and insert it into a SQL query using parameterized values. We then use the db.query() method to execute the query and retrieve the newly created task. Finally, we send the task as a JSON response back to the front end.
+*/

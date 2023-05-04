@@ -1,17 +1,56 @@
 * {
   margin: 0;
   padding: 0;
-  background-color: pink;
 }
 
+body {
+  background-color: pink;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 h3 {
   color: maroon;
 }
-/* .classNameHereOfUrChoice {
+/* 
+ ACCESS CLASS WITH .
+.classNameHereOfUrChoice {
 
 }
 
+ACCESS ID WITH *
 #idOfYourChoice {
 
 } */
+
+/****** Start of KP's practice main-container styling ******/
+.main-container {
+  border-style: solid;
+  width: 800px;
+  height: 500px;
+  background-color:rgb(188, 253, 231);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#toDoList-header {
+  background-color: papayawhip;
+}
+
+.intro-p {
+  font-size: 24px;
+}
+
+
+/****** End of KP's practice main-container styling ******/
+
+
+
+
+
+/****** Start of ADD COMPONENT HERE styling ******/
+
+/****** End of ADD COMPONENT HERE styling ******/
