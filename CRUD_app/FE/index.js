@@ -1,5 +1,60 @@
 // create our front end using dom manipulation here
 
+// FUNCTIONS TO EXECUTE & ADD TO ELEMENTS:
+
+// CREATE ADD-TASK-TO-DATABASE FUNCTION
+function addTaskToDatabase(taskValue) {
+  // create fetch request
+  fetch('/tasks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    // key is the same as destructured version in the routeController file
+    body: JSON.stringify({ directions: taskValue })
+  })
+  // then statements
+  .then(response => response.json())
+  .then(response => console.log(`this is response: ${response}`))
+  .then(task => {
+    // create individual task element
+    const taskElement = document.createElement('div');
+    taskElement.setAttribute('class', 'task');
+    taskElement.textContent = task.task;
+
+    // create edit button
+    const editButton = document.createElement('button');
+    editButton.setAttribute('class', 'edit-button');
+    editButton.textContent = 'Edit Task';
+
+    // create delete button
+    const deleteButton = document.createElement('button');
+    deleteButton.setAttribute('class', 'delete-button');
+    deleteButton.textContent = 'Delete';
+
+    // add event listener to edit button
+    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
+    editButton.addEventListener('click', editTaskInDatabase)
+
+    // add event listener to delete button
+    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
+    deleteButton.addEventListener('click', function(event) {
+      deleteTaskInDatabase();
+      taskListContainer.removeChild(taskElement);
+      taskListContainer.removeChild(editButton);
+      taskListContainer.removeChild(deleteButton);
+    });
+
+    // append task element, edit & delete button to taskListContainer
+    taskListContainer.appendChild(taskElement);
+    taskListContainer.appendChild(editButton);
+    taskListContainer.appendChild(deleteButton);
+  })
+  .catch(error => console.error(`There's an error in task post request FE: ${error}`));
+};
+
+
+// START OF CREATING AND APPENDING ELEMENTS TO DOM
 
 const startHeader = document.createElement('h2');
 {/* <h1>Hello world, start of our page</h1> */}
@@ -37,6 +92,67 @@ toDoListPara.textContent = 'Please describe the task you\' like to add here:';
 
 // Inserting paragraph under header
 toDoListHeader.insertAdjacentElement('afterend', toDoListPara);
+
+
+// Create a task form 
+const taskForm = document.createElement('form');
+taskForm.setAttribute('class', 'task-form');
+// add form below the para tag
+toDoListPara.insertAdjacentElement('afterend', taskForm);
+
+// HELPER FUNCTION TO ADD MULTIPLE ATTRIBUTES
+function setMultiAttributes(el, attrs) {
+  for(const key in attrs) {
+    el.setAttribute(key, attrs[key]);
+  }
+}
+
+// // create task input 
+const taskInput = document.createElement('input');
+// taskForm.setAttribute('class', 'task-form');
+// taskForm.setAttribute('type', 'text');
+// taskForm.setAttribute('size', '50');
+// taskForm.setAttribute('name', 'name');
+// taskForm.setAttribute('palceholder', 'Add your task here');
+
+const setOfAttrs = {
+  'class': 'task-input',
+  'type': 'text',
+  'size': '50',
+  'name': 'name',
+  'placeholder': 'Add your task here',
+};
+
+setMultiAttributes(taskInput, setOfAttrs);
+
+// insert input container as first child in form tag
+taskForm.insertAdjacentElement('afterbegin', taskInput);
+
+// create a submit button for the input form
+const submitTask = document.createElement('button');
+submitTask.setAttribute('type', 'submit');
+submitTask.textContent = 'Add Task';
+
+// alternative to using insertAdjacentElement
+taskForm.appendChild(submitTask);
+
+// CREATING EVENTLISTENER FOR ADD TASK SUBMIT EVENT
+taskForm.addEventListener('submit', function(event) {
+  // The event.preventDefault() method is called to prevent the default form submission behavior, which would cause the page to reload.
+  event.preventDefault();
+  // declare a variable that we will pass the input data to BE
+  const taskValue = taskInput.value;
+  // this is separate function to handle fetch request
+  addTaskToDatabase(taskValue);
+  // clear input form after successful submit
+  taskForm.reset();
+});
+
+// CREATE CONTAINER FOR ALL TASKS
+const taskListContainer = document.createElement('div');
+taskListContainer.setAttribute('class', 'taskList-cont');
+mainContainerTest.appendChild(taskListContainer);
+
 
 
 
@@ -199,8 +315,6 @@ Now that we have created the form, let's move on to creating a separate element/
 
     Create an empty div element to contain the list of tasks:
 
-javascript
-
 const taskListContainer = document.createElement('div');
 
     Create a function called addTaskToList that takes in the task value as a parameter, creates a new task element, and appends it to the taskListContainer element:
@@ -299,6 +413,19 @@ function addTaskToList(taskValue) {
 
 In this example, we add an event listener to the deleteButton that removes the taskElement, editButton, and deleteButton from the taskListContainer.
 
-That should be it! Let me know if you have any other questions.
+
+// HELPER FUNCTION TO ADD MULTIPLE ATTRIBUTES 
+attrs = an object of key value pairs, where the key is the attribute name, and it's value is whatever we want to set to
+
+function setAttributesFunc(el, attrs) {
+  for(var key in attrs) {
+    el.setAttribute(key, attrs[key]);
+  }
+}
+
+example: 
+setAttributesFunc(myTestElement, { 'class': 'my-custom-class', 'id': 'my-test-id' });
+
+
 
 */

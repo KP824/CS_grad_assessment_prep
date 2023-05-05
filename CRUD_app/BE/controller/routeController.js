@@ -37,6 +37,7 @@ routeController.createNewTask = async (req, res, next) => {
       RETURNING *
       `;
 
+    console.log(`inside of create new task. req.body: ${req.body}`);
     // Declare variable for addTask
     const addTask = await db.query(addQuery, [directions]);
 
