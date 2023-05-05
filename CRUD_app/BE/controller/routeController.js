@@ -12,7 +12,7 @@ routeController.getAllTasks = async (req, res, next) => {
     const getTasks = await db.query(search);
 
     // The evaluated result of the query at the rows property, will be an array of objects. Each object will be individual inputs into the data base, in this case the id value and the task directions. Each task is represented as a row on the "Tasks" table.
-    console.log(`JSON.rows: ${JSON.stringify(getTasks.rows)}`);
+    // console.log(`JSON.rows: ${JSON.stringify(getTasks.rows)}`);
     
     res.locals.tasks = getTasks.rows;
     return next();
@@ -27,6 +27,7 @@ routeController.getAllTasks = async (req, res, next) => {
 };
 
 routeController.createNewTask = async (req, res, next) => {
+  console.log(`inside of BACK END FROM SUBMIT REQUEST`);
   try {
     // destructure / sanitize req body
     const { directions } = req.body;
@@ -37,7 +38,7 @@ routeController.createNewTask = async (req, res, next) => {
       RETURNING *
       `;
 
-    console.log(`inside of create new task. req.body: ${req.body}`);
+    console.log(`inside of create new task. req.body: ${JSON.stringify(req.body)}`);
     // Declare variable for addTask
     const addTask = await db.query(addQuery, [directions]);
 

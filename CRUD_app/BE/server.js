@@ -1,7 +1,8 @@
 // set up our express routes here
 const path = require('path');
 const express = require('express');
-const PORT = 3500;
+const cors = require('cors');
+const PORT = 5500;
 const app = express();
 // import api router routes
 const apiRouter = require('./routes/api');
@@ -12,11 +13,15 @@ const apiRouter = require('./routes/api');
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors());
 /**
  * handle requests for static files
  */
 app.use(express.static(path.resolve(__dirname, '../FE')));
+
+// app.get('/', (req, res) => {
+//   res.status(200).sendFile(path.resolve(__dirname, '../index.html'));
+// })
 
 // defined route handlers (check line 7)
 app.use('/tasks', apiRouter);

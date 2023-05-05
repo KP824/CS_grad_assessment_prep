@@ -1,58 +1,5 @@
 // create our front end using dom manipulation here
 
-// FUNCTIONS TO EXECUTE & ADD TO ELEMENTS:
-
-// CREATE ADD-TASK-TO-DATABASE FUNCTION
-function addTaskToDatabase(taskValue) {
-  // create fetch request
-  fetch('/tasks', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    // key is the same as destructured version in the routeController file
-    body: JSON.stringify({ directions: taskValue })
-  })
-  // then statements
-  .then(response => response.json())
-  .then(response => console.log(`this is response: ${response}`))
-  .then(task => {
-    // create individual task element
-    const taskElement = document.createElement('div');
-    taskElement.setAttribute('class', 'task');
-    taskElement.textContent = task.task;
-
-    // create edit button
-    const editButton = document.createElement('button');
-    editButton.setAttribute('class', 'edit-button');
-    editButton.textContent = 'Edit Task';
-
-    // create delete button
-    const deleteButton = document.createElement('button');
-    deleteButton.setAttribute('class', 'delete-button');
-    deleteButton.textContent = 'Delete';
-
-    // add event listener to edit button
-    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
-    editButton.addEventListener('click', editTaskInDatabase)
-
-    // add event listener to delete button
-    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
-    deleteButton.addEventListener('click', function(event) {
-      deleteTaskInDatabase();
-      taskListContainer.removeChild(taskElement);
-      taskListContainer.removeChild(editButton);
-      taskListContainer.removeChild(deleteButton);
-    });
-
-    // append task element, edit & delete button to taskListContainer
-    taskListContainer.appendChild(taskElement);
-    taskListContainer.appendChild(editButton);
-    taskListContainer.appendChild(deleteButton);
-  })
-  .catch(error => console.error(`There's an error in task post request FE: ${error}`));
-};
-
 
 // START OF CREATING AND APPENDING ELEMENTS TO DOM
 
@@ -102,25 +49,25 @@ toDoListPara.insertAdjacentElement('afterend', taskForm);
 
 // HELPER FUNCTION TO ADD MULTIPLE ATTRIBUTES
 function setMultiAttributes(el, attrs) {
-  for(const key in attrs) {
+  for (const key in attrs) {
     el.setAttribute(key, attrs[key]);
   }
 }
 
 // // create task input 
 const taskInput = document.createElement('input');
-// taskForm.setAttribute('class', 'task-form');
-// taskForm.setAttribute('type', 'text');
-// taskForm.setAttribute('size', '50');
-// taskForm.setAttribute('name', 'name');
-// taskForm.setAttribute('palceholder', 'Add your task here');
+taskForm.setAttribute('class', 'task-form');
+taskForm.setAttribute('type', 'text');
+taskForm.setAttribute('size', '50');
+taskForm.setAttribute('name', 'name');
+taskForm.setAttribute('palceholder', 'Add your task here');
 
 const setOfAttrs = {
   'class': 'task-input',
   'type': 'text',
   'size': '50',
-  'name': 'name',
-  'placeholder': 'Add your task here',
+  'name': 'taskInput',
+  'placeholder': 'HEllo stephanie',
 };
 
 setMultiAttributes(taskInput, setOfAttrs);
@@ -143,6 +90,7 @@ taskForm.addEventListener('submit', function(event) {
   // declare a variable that we will pass the input data to BE
   const taskValue = taskInput.value;
   // this is separate function to handle fetch request
+  console.log(`Inside of taskForm event listener. taskValue: ${taskValue}`);
   addTaskToDatabase(taskValue);
   // clear input form after successful submit
   taskForm.reset();
@@ -154,8 +102,88 @@ taskListContainer.setAttribute('class', 'taskList-cont');
 mainContainerTest.appendChild(taskListContainer);
 
 
+// FUNCTIONS TO EXECUTE & ADD TO ELEMENTS:
+
+// CREATE ADD-TASK-TO-DATABASE FUNCTION
+function addTaskToDatabase(taskValue) {
+  // create fetch request
+  console.log(`Inside of add task to database. taskValue: ${taskValue}`);
+  fetch('http://localhost:5500/tasks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    // key is the same as destructured version in the routeController file
+    body: JSON.stringify({ directions: taskValue })
+  })
+  // then statements
+  // .then(response => response.json())s
+  .then(response => response.json())
+  .then(response => {
+    console.log(`this is response: ${response}`)
+    return response
+  })
+  .then(taskDB => {
+    // create individual task element
+    const taskElement = document.createElement('div');
+    taskElement.setAttribute('class', 'task');
+    taskElement.textContent = taskDB.directions;
+
+    // create edit button
+    const editButton = document.createElement('button');
+    editButton.setAttribute('class', 'edit-button');
+    editButton.textContent = 'Edit Task';
+
+    // create delete button
+    const deleteButton = document.createElement('button');
+    deleteButton.setAttribute('class', 'delete-button');
+    deleteButton.textContent = 'Delete';
+
+    // add event listener to edit button
+    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
+    editButton.addEventListener('click', editTaskInDatabase)
+
+    // add event listener to delete button
+    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
+    deleteButton.addEventListener('click', function(event) {
+      deleteTaskInDatabase();
+      taskListContainer.removeChild(taskElement);
+      taskListContainer.removeChild(editButton);
+      taskListContainer.removeChild(deleteButton);
+    });
+
+    // append task element, edit & delete button to taskListContainer
+    taskListContainer.appendChild(taskElement);
+    taskListContainer.appendChild(editButton);
+    taskListContainer.appendChild(deleteButton);
+  })
+  .catch(error => console.error(`There's an error in task post request FE: ${error}`));
+};
+
+// FUNCTION FOR PUT REQUEST
+function editTaskInDatabase(task, taskId) {
+  fetch(`/${taskId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ directions: task })
+  })
+  .then(response => response.json())
+  .then(response => console.log(`This is response from put request: ${response}`))
+  .catch(error => console.log(`Error from put request FE: ${error}`))
+}
 
 
+// FUNCTION FOR DELETE REQUEST
+function deleteTaskInDatabase(taskId) {
+  fetch(`/${taskId}`, {
+    method: 'DELETE',
+  })
+  .then(response => response.json())
+  .then(response => console.log(`This is response from delete request: ${response}`))
+  .catch(error => console.log(`Error from delete request FE: ${error}`));
+};
 
 
  /* BASIC DOM MANIPULATION METHODS TO USE:
