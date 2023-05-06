@@ -1,23 +1,19 @@
 // create our front end using dom manipulation here
-
+window.addEventListener("DOMContentLoaded", (event) => {
+  console.log(`DOM fully loaded and parsed`);
+})
 
 // START OF CREATING AND APPENDING ELEMENTS TO DOM
 
 const startHeader = document.createElement('h2');
-{/* <h1>Hello world, start of our page</h1> */}
 startHeader.innerHTML = "Hello world, start of our page";
-
 // Use this approach to add all additional elements to our HTML page
 // document.body.appendChild(variable name here)
 document.body.appendChild(startHeader);
 
 const newLine = document.createElement('h3');
-newLine.innerHTML = "I HATE STUDYING";
+newLine.innerHTML = "GRAD ASSESSMENT YOU\'RE MY BBBIYAHHH";
 document.body.appendChild(newLine);
-
-const newLine2 = document.createElement('h3');
-newLine2.textContent = "I HATE STUDYING, BUT I LOVE SUCCESS. LESS GIT IT!!";
-document.body.appendChild(newLine2);
 
 // Start making a container to insert todo functions in
 const mainContainerTest = document.createElement('div');
@@ -56,20 +52,21 @@ function setMultiAttributes(el, attrs) {
 
 // // create task input 
 const taskInput = document.createElement('input');
-taskForm.setAttribute('class', 'task-form');
-taskForm.setAttribute('type', 'text');
-taskForm.setAttribute('size', '50');
-taskForm.setAttribute('name', 'name');
-taskForm.setAttribute('palceholder', 'Add your task here');
+// INEFFICIENT
+// taskForm.setAttribute('class', 'task-form');
+// taskForm.setAttribute('type', 'text');
+// taskForm.setAttribute('size', '50');
+// taskForm.setAttribute('name', 'name');
+// taskForm.setAttribute('palceholder', 'Add your task here');
 
 const setOfAttrs = {
   'class': 'task-input',
   'type': 'text',
   'size': '50',
   'name': 'taskInput',
-  'placeholder': 'HEllo stephanie',
+  'placeholder': 'Hey BB, U got me feelin\' punchdrunk crazy',
 };
-
+// EFFICIENT
 setMultiAttributes(taskInput, setOfAttrs);
 
 // insert input container as first child in form tag
@@ -90,7 +87,7 @@ taskForm.addEventListener('submit', function(event) {
   // declare a variable that we will pass the input data to BE
   const taskValue = taskInput.value;
   // this is separate function to handle fetch request
-  console.log(`Inside of taskForm event listener. taskValue: ${taskValue}`);
+  // console.log(`Inside of taskForm event listener. taskValue: ${taskValue}`);
   addTaskToDatabase(taskValue);
   // clear input form after successful submit
   taskForm.reset();
@@ -101,13 +98,64 @@ const taskListContainer = document.createElement('div');
 taskListContainer.setAttribute('class', 'taskList-cont');
 mainContainerTest.appendChild(taskListContainer);
 
+// Want to do a GET request here and append each row if data in as a child element into taskListContainer
+fetch('/tasks', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+})
+  .then(response => response.json())
+  .then(response => {
+    // console.log(`this is data from GET request: ${response}`)
+    // iterate through array of data 
+    // pass each data through createTaskElement function with the two pieces of info
+    response.forEach(data => createTaskElement(data.id, data.directions))
+  })
+  .catch(error => console.error(`Error with FE get request : ${error}`));
+
 
 // FUNCTIONS TO EXECUTE & ADD TO ELEMENTS:
+
+// CREATE FUNCTION TO GENERATE ELEMENT WITH EDIT AND DELETE BUTTONS
+function createTaskElement(id, directions) {
+  const taskElement = document.createElement('div');
+  taskElement.setAttribute('class', 'task');
+  taskElement.setAttribute('key', id);
+  taskElement.textContent = directions;
+
+   // create edit button
+   const editButton = document.createElement('button');
+   editButton.setAttribute('class', 'edit-button');
+   editButton.textContent = 'Edit Task';
+
+   // create delete button
+   const deleteButton = document.createElement('button');
+   deleteButton.setAttribute('class', 'delete-button');
+   deleteButton.textContent = 'Delete';
+
+  // add event listener to edit button
+  editButton.addEventListener('click', editTaskInDatabase);
+
+  // add event listener to delete button
+  deleteButton.addEventListener('click', function(event) {
+    //console.log(`task info : ${response}`)
+    deleteTaskInDatabase(id);
+    taskListContainer.removeChild(taskElement);
+    taskListContainer.removeChild(editButton);
+    taskListContainer.removeChild(deleteButton);
+  });
+
+   // append task element, edit & delete button to taskListContainer
+   taskListContainer.appendChild(taskElement);
+   taskListContainer.appendChild(editButton);
+   taskListContainer.appendChild(deleteButton);
+};
 
 // CREATE ADD-TASK-TO-DATABASE FUNCTION
 function addTaskToDatabase(taskValue) {
   // create fetch request
-  console.log(`Inside of add task to database. taskValue: ${taskValue}`);
+  // console.log(`Inside of add task to database. taskValue: ${taskValue}`);
   fetch('http://localhost:5500/tasks', {
     method: 'POST',
     headers: {
@@ -120,68 +168,43 @@ function addTaskToDatabase(taskValue) {
   // .then(response => response.json())s
   .then(response => response.json())
   .then(response => {
-    console.log(`this is response: ${response}`)
+    console.log(`this is response: ${JSON.stringify(response)}`)
     return response
   })
-  .then(taskDB => {
-    // create individual task element
-    const taskElement = document.createElement('div');
-    taskElement.setAttribute('class', 'task');
-    taskElement.textContent = taskDB.directions;
-
-    // create edit button
-    const editButton = document.createElement('button');
-    editButton.setAttribute('class', 'edit-button');
-    editButton.textContent = 'Edit Task';
-
-    // create delete button
-    const deleteButton = document.createElement('button');
-    deleteButton.setAttribute('class', 'delete-button');
-    deleteButton.textContent = 'Delete';
-
-    // add event listener to edit button
-    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
-    editButton.addEventListener('click', editTaskInDatabase)
-
-    // add event listener to delete button
-    // NEED TO CREATE FETCH REQUEST FOR editTaskInDatabase
-    deleteButton.addEventListener('click', function(event) {
-      deleteTaskInDatabase();
-      taskListContainer.removeChild(taskElement);
-      taskListContainer.removeChild(editButton);
-      taskListContainer.removeChild(deleteButton);
-    });
-
-    // append task element, edit & delete button to taskListContainer
-    taskListContainer.appendChild(taskElement);
-    taskListContainer.appendChild(editButton);
-    taskListContainer.appendChild(deleteButton);
+  .then(response => {
+    createTaskElement(response.id, response.directions);
   })
   .catch(error => console.error(`There's an error in task post request FE: ${error}`));
 };
 
 // FUNCTION FOR PUT REQUEST
-function editTaskInDatabase(task, taskId) {
-  fetch(`/${taskId}`, {
+function editTaskInDatabase(directions, taskId) {
+  fetch(`/tasks/${taskId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ directions: task })
+    body: JSON.stringify({ directions: directions })
   })
   .then(response => response.json())
-  .then(response => console.log(`This is response from put request: ${response}`))
+  .then(response => {
+    console.log(`This is response from put request: ${response}`)
+    return response;
+  })
   .catch(error => console.log(`Error from put request FE: ${error}`))
-}
+};
 
 
 // FUNCTION FOR DELETE REQUEST
 function deleteTaskInDatabase(taskId) {
-  fetch(`/${taskId}`, {
+  fetch(`/tasks/${taskId}`, {
     method: 'DELETE',
   })
   .then(response => response.json())
-  .then(response => console.log(`This is response from delete request: ${response}`))
+  .then(response => {
+    console.log(`This is response from delete request: ${JSON.stringify(response)}`)
+    return response;
+  })
   .catch(error => console.log(`Error from delete request FE: ${error}`));
 };
 
@@ -225,47 +248,7 @@ EXAMPLE: existingDiv.insertAdjacentElement('afterend', newDiv); // Here, newDiv 
 // ONE OF MANY METHODS: https://developer.mozilla.org/en-US/docs/Web/API/Node/insertBefore
 document.body.insertBefore(divToInsert, divToInsertBefore)
 
-
-// EXAMPLE OF CREATING A FETCH REQUEST WITH VANILLA JS / DOM MANIPULATION
-In the front-end code (e.g., HTML or React component), create a form that allows the user to input the necessary data for the task. For example:
-
-html
-
-<form>
-  <label>
-    Directions:
-    <input type="text" name="directions" />
-  </label>
-  <button type="submit">Create Task</button>
-</form>
-
-Add an event listener to the form to handle the submission. When the form is submitted, prevent the default behavior of the browser and send an HTTP POST request to the server with the data from the form. For example, using fetch():
-
-In this example, we create a new FormData object from the form, then extract the directions field from the form data and create a data object. We then send an HTTP POST request to the /tasks route on the server with the data object in the request body as a JSON string.
-
-javascript
-
-const form = document.querySelector('form');
-
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const formData = new FormData(form);
-  const data = {
-    directions: formData.get('directions'),
-  };
-  const response = await fetch('/tasks', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-  const result = await response.json();
-  console.log(result);
-});
-
 // EXAMPLE OF A BUTTON FUNCTION WITH CHANGING COLORS
-
 Button example:
 <html lang="en">
   <head>
@@ -278,8 +261,6 @@ Button example:
   </body>
 </html>
 
-JavaScript
-
 function changeColor(newColor) {
   const elem = document.getElementById("para");
   elem.style.color = newColor;
@@ -287,20 +268,15 @@ function changeColor(newColor) {
 
 */
 
-
 /* EXAMPLE FROM CHAT FOR CREATING A FORM. MUST DOUBLE CHECK TO SEE IF APPLICABLE. NO USE OF FETCH REQUEST YET
 
 Here are the steps to create a form where we can submit a task:
 
     Create a form element:
 
-javascript
-
 const taskForm = document.createElement('form');
 
     Create an input element where users can enter their task:
-
-javascript
 
 const taskInput = document.createElement('input');
 taskInput.setAttribute('type', 'text');
@@ -309,22 +285,16 @@ taskInput.setAttribute('name', 'task');
 
     Create a submit button element:
 
-javascript
-
 const submitButton = document.createElement('button');
 submitButton.setAttribute('type', 'submit');
 submitButton.textContent = 'Add Task';
 
     Append the input and submit button elements to the form element:
 
-javascript
-
 taskForm.appendChild(taskInput);
 taskForm.appendChild(submitButton);
 
     Add an event listener to the form element to listen for a submit event:
-
-javascript
 
 taskForm.addEventListener('submit', function(event) {
   event.preventDefault();
@@ -339,68 +309,11 @@ The event.preventDefault() method is called to prevent the default form submissi
 
 Finally, we call taskForm.reset() to clear the input field after the task has been added.
 
-Now that we have created the form, let's move on to creating a separate element/container that will render all the added tasks.
-
     Create an empty div element to contain the list of tasks:
 
 const taskListContainer = document.createElement('div');
 
-    Create a function called addTaskToList that takes in the task value as a parameter, creates a new task element, and appends it to the taskListContainer element:
-
-javascript
-
-function addTaskToList(taskValue) {
-  // create task element
-  const taskElement = document.createElement('div');
-  taskElement.setAttribute('class', 'task');
-  taskElement.textContent = taskValue;
-  
-  // create edit button
-  const editButton = document.createElement('button');
-  editButton.setAttribute('class', 'edit-button');
-  editButton.textContent = 'Edit';
-  
-  // create delete button
-  const deleteButton = document.createElement('button');
-  deleteButton.setAttribute('class', 'delete-button');
-  deleteButton.textContent = 'Delete';
-  
-  // append task element, edit button, and delete button to taskListContainer
-  taskListContainer.appendChild(taskElement);
-  taskListContainer.appendChild(editButton);
-  taskListContainer.appendChild(deleteButton);
-}
-
-In this example, we create a taskElement div element and set its class and text content to the task value.
-
-We also create an editButton and deleteButton element, set their class and text content, and append them to the taskListContainer element.
-
-    Finally, append the form element and the task list container element to the document body:
-
-javascript
-
-document.body.appendChild(taskForm);
-document.body.appendChild(taskListContainer);
-
-This should create a form where we can submit a task and a separate element/container that will render all the added tasks.
-
-To add functionality to the edit and delete buttons, we can add event listeners to them in the addTaskToList function:
-
-javascript
-
-// add event listener to edit button
-editButton.addEventListener('click', function(event) {
-  const newTaskValue = prompt('Enter new task value:');
-  if (newTaskValue !== null) {
-    taskElement.textContent = newTaskValue;
-  }
-});
-
-// add event listener
-
 Here's the complete addTaskToList function with the delete button event listener:
-
-javascript
 
 function addTaskToList(taskValue) {
   // create task element
@@ -454,6 +367,19 @@ function setAttributesFunc(el, attrs) {
 example: 
 setAttributesFunc(myTestElement, { 'class': 'my-custom-class', 'id': 'my-test-id' });
 
+ // create individual task element
+    const taskElement = document.createElement('div');
+    taskElement.setAttribute('class', 'task');
+    taskElement.setAttribute('key', response.id);
+    taskElement.textContent = response.directions;
 
+    // create edit button
+    const editButton = document.createElement('button');
+    editButton.setAttribute('class', 'edit-button');
+    editButton.textContent = 'Edit Task';
 
+    // create delete button
+    const deleteButton = document.createElement('button');
+    deleteButton.setAttribute('class', 'delete-button');
+    deleteButton.textContent = 'Delete';
 */

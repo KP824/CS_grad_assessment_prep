@@ -51,6 +51,7 @@ ACCESS ID WITH *
   border-radius: 5px;
   border-color: black;
   background-color: bisque;
+  overflow-y: scroll;
 }
 
 

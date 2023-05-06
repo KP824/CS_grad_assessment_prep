@@ -93,10 +93,10 @@ routeController.deleteTask = async (req, res, next) => {
     const { id } = req.params;
     const deleteQuery = `
       DELETE FROM tasks
-      WHERE id = $1  
+      WHERE id = ${id}  
     `;
 
-    const response = await db.query(deleteQuery, [id])
+    const response = await db.query(deleteQuery)
     // There is nothing to console log here because on a successful delete, there would be in response
     return next();
 
